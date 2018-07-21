@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4:fdm=marker
-from guidekey import get_data_dict
-from key_handling import escape_keys
+from guidekey.key_handling import escape_keys
 
 def save_screen_information(nvim): #{{{
     nvim.vars['guidekey#_winsaveview'] = nvim.eval('winsaveview()')

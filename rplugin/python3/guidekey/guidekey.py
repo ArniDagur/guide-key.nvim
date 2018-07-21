@@ -22,7 +22,7 @@
 #  okay. thank you very much
 # }}}
 
-from key_handling import get_desc, key_to_list, escape_keys
+from guidekey.key_handling import get_desc, key_to_list, escape_keys
 
 def get_feedkey_cmd(rhs, noremap):
     if noremap:
