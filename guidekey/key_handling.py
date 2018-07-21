@@ -29,3 +29,6 @@ def get_desc(nvim, key):
         return nvim.vars['guidekey_desc_dict'][key]
     else:
         return key
+
+def escape_keys(key):
+    return key.replace('<', '<lt>').replace('|', '<Bar>')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4:fdm=marker
-
+# {{{ IRC CONVO
 #  Justin M. Keyes @justinm
 #  no, just a regular self.nvim.request('nvim_get_keymap', ...) should work
 #  Actually I just read http://pynvim.readthedocs.io/en/latest/usage/python-plugin-api.html#nvim-api-methods-vim-api
@@ -20,8 +20,10 @@
 
 #  Árni Dagur @ArniDagur 01:51
 #  okay. thank you very much
+# }}}
 
-from key_handling import get_desc, key_to_list
+from key_handling import get_desc, key_to_list, escape_keys
+from input_handling import wait_for_input
 
 def get_data_dict(nvim):
     if 'guidekey_starting_data_dict' in nvim.vars:
@@ -174,6 +176,12 @@ def draw_menu(nvim, window, data_dict):
         else:
             lines_of_buffer.append(addition)
             col = 1
+        # We do the following so that the user does not have to press enter
+        # when choosing from the menu. The key 'n', for example, is bound to
+        # 'n<CR>', where <CR> is carriage return.
+        nvim.command('sil exe "cnoremap <nowait> <buffer> {} {}<CR>"'.format(
+            key.replace('|', '<Bar>', escape_keys(key))
+        ))
     
     # Resize menu to fit everything
     max_size = nvim.vars.get('guidekey_max_size')
@@ -192,7 +200,8 @@ def draw_menu(nvim, window, data_dict):
     window.buffer[:] = lines_of_buffer
     nvim.command('setlocal nomodifiable readonly')
 
-def create_menu():
+
+def create_menu(nvim, data_dict):
     window = create_window()
 
 def close_window(nvim):
@@ -212,7 +221,7 @@ def close_window(nvim):
             # Go to previous window
             nvim.command('noa exe g:guidekey#_winnr . "winc w"')
             # Restore the view of the previous window
-            nvim.command('call winrestview(g:guidekey#_winsaveview)')
+            nvim.call('winrestview(g:guidekey#_winsaveview)')
     except:
         # Window (probably) does not exist and thus cannot be closed
         pass
