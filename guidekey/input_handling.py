@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4
 
-from guidekey import close_window, create_menu
+from menu import close_window, start_buffer
 
-def wait_for_input(nvim):
+def wait_for_input(nvim, data_dict):
     nvim.command('redraw')
     # Wait for a key to be pressed
     user_input = nvim.eval('input("")')
     if user_input == '':
         close_window(nvim)
     else:
-        handle_input(user_input)
+        handle_input(nvim, user_input, data_dict)
 
 def handle_input(nvim, user_input, data_dict):
     close_window(nvim)
@@ -25,5 +25,4 @@ def handle_input(nvim, user_input, data_dict):
             create_menu(nvim, key_dict)
         else:
             # The key _is_ a mapping. Execute it.
-            # TODO
-            pass
+            nvim.command('uns exe {}'.format(key_dict['value']))
