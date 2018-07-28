@@ -22,21 +22,18 @@
 #  okay. thank you very much
 # }}}
 
-from guidekey.key_handling import get_desc, key_to_list, escape_keys
+from key_handling import get_desc, key_to_list, escape_keys
 
-def get_feedkey_cmd(rhs, noremap):
-    if noremap:
+def get_feedkey_args(keybinding):
+    if keybinding['noremap']:
         # n: Do not remap keys
         # t: Handle keys as if typed
-        args = 'nt'
+        flags = 'nt'
     else:
         # m: Remap keys
         # t: Handle keys as if typed
-        args = 'mt'
-    feedkey_cmd = 'feedkeys("{}, {}")'.format(rhs, args)
-
-    return feedkey_cmd
-
+        flags = 'mt'
+    return [keybinding['rhs'], flags]
 
 def get_data_dict(nvim):
     if 'guidekey_starting_data_dict' in nvim.vars:
@@ -79,7 +76,7 @@ def get_data_dict(nvim):
                 'noremap': keybinding['noremap'],
                 'lhs': lhs,
                 'rhs': rhs,
-                'feedkey_cmd': get_feedkey_cmd(rhs, keybinding['noremap']),
+                'feedkey_args': get_feedkey_args(keybinding),
                 'nowait': keybinding['nowait'],
                 'silent': keybinding['silent'],
                 'sid': keybinding['sid'],
