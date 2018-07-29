@@ -16,4 +16,4 @@ So it just kind of sort of works if you close your eyes and cross your fingers.
 | `g:guidekey_position`           | n/a         | `topleft`, `botright` | `botright`  |
 | `g:guidekey_vertical`           | n/a         | `0` or `1`            | `0`         |
 | `g:guidekey_statusline`         | n/a         | string                | `Guide Key` |
-| `g:guidekey_desc_dict`          | n/a         | dict                  | `{}`        |# Options:
+| `g:guidekey_desc_dict`          | n/a         | dict                  | `{}`        |
