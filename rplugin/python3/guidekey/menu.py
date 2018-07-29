@@ -152,7 +152,7 @@ def calculate_layout_of_menu(nvim, window, data_dict):# {{{
         'capacity': capacity
     }
 #}}}
-def create_lines_of_buffer(nvim, layout, data_dict):
+def create_lines_of_buffer(nvim, layout, data_dict): #{{{
     # Create the contents of the buffer to be shown on screen
     lines_of_buffer = ['']
     col = 0
@@ -167,6 +167,7 @@ def create_lines_of_buffer(nvim, layout, data_dict):
             lines_of_buffer.append(addition)
             col = 1
     return lines_of_buffer
+#}}}
 def draw_menu_onto_window(nvim, window, data_dict): #{{{
     layout = calculate_layout_of_menu(nvim, window, data_dict)
 
@@ -190,8 +191,10 @@ def draw_menu_onto_window(nvim, window, data_dict): #{{{
 #}}}
 
 # {{{ Input
-def append_enter_to_keys_in_data_dict(nvim, data_dict, execute=True):
+def append_enter_to_keys_in_data_dict(nvim, window, data_dict, execute=True):
     calls = []
+    if not nvim.current == window:
+        calls.append(['nvim_set_current_win', [window]])
     for key in data_dict.keys():
         # We do the following so that the user does not have to press enter
         # when choosing from the menu. The key 'n', for example, is bound to
@@ -205,33 +208,33 @@ def append_enter_to_keys_in_data_dict(nvim, data_dict, execute=True):
         nvim.request('nvim_call_atomic', calls)
     else:
         return calls
-def wait_for_input(nvim, data_dict):
-    #  nvim.command('redraw')
-    append_enter_to_keys_in_data_dict(nvim, data_dict)
+def wait_for_input(nvim, window, data_dict):
+    append_enter_to_keys_in_data_dict(nvim, window, data_dict)
     # Wait for a key to be pressed
     user_input = nvim.eval('input("")')
     if user_input == '':
         close_window(nvim)
     else:
-        handle_input(nvim, user_input, data_dict)
+        handle_input(nvim, window, user_input, data_dict)
 
-def handle_input(nvim, user_input, data_dict):
-    close_window(nvim)
-
-    # TODO: Put data_dict into global variable?
-
+def handle_input(nvim, window, user_input, data_dict):
     if user_input in data_dict:
         key_dict = data_dict[user_input]
         if not key_dict['mapping']:
             # The key is not a mapping but a 'directory'. Open it.
-            start_buffer(nvim, key_dict)
+            draw_menu_onto_window(nvim, window, key_dict)
+            wait_for_input(nvim, window, key_dict)
         else:
-            # The key _is_ a mapping. Execute it.
+            # The key is a mapping. Execute it.
+            close_window(nvim)
             feedkey_args = key_dict['feedkey_args']
-            nvim.request('nvim_feedkeys', feedkey_args[0], feedkey_args[1],
-                         # If true, escape K_SPECIAL/CSI bytes in 'keys';
-                         # I have no idea what that means.
-                         False)
+            nvim.request(
+                'nvim_feedkeys',
+                feedkey_args[0], feedkey_args[1],
+                False # If true, escape K_SPECIAL/CSI bytes in 'keys'
+            )
+    else:
+        close_window(nvim)
 # }}}
 
 def start_buffer(nvim, data_dict):
@@ -244,4 +247,4 @@ def start_buffer(nvim, data_dict):
     draw_menu_onto_window(nvim, window, data_dict)
 
     # This function waits for input and handles it appropriately
-    wait_for_input(nvim, data_dict)
+    wait_for_input(nvim, window, data_dict)
