@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4:fdm=marker
-from key_handling import escape_keys
+try:
+    from key_handling import escape_keys
+except:
+    from guidekey.key_handling import escape_keys
 
 def save_screen_information(nvim): #{{{
     nvim.vars['guidekey#_winsaveview'] = nvim.eval('winsaveview()')
@@ -114,7 +117,7 @@ def calculate_max_length_of_data_dict(data_dict): #{{{
 
     string_lengths = []
     for k in looping_dict.keys():
-        print(k, data_dict[k])
+        #  print(k, data_dict[k])
         string = '[{}] {}'.format(k, data_dict[k]['desc'])
         string_lengths.append(len(string))
 

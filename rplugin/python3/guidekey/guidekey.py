@@ -21,8 +21,10 @@
 #  Árni Dagur @ArniDagur 01:51
 #  okay. thank you very much
 # }}}
-
-from key_handling import get_desc, key_to_list, escape_keys
+try:
+    from key_handling import get_desc, key_to_list, escape_keys
+except:
+    from guidekey.key_handling import get_desc, key_to_list, escape_keys
 
 def get_feedkey_args(keybinding):
     if keybinding['noremap']:

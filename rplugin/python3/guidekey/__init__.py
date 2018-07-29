@@ -4,8 +4,12 @@
 
 import neovim
 
-from menu import start_buffer, close_window
-from guidekey import get_data_dict
+try:
+    from menu import start_buffer, close_window
+    from guidekey import get_data_dict
+except:
+    from guidekey.menu import start_buffer, close_window
+    from guidekey.guidekey import get_data_dict
 
 @neovim.plugin
 class GuidekeyHandlers(object):
