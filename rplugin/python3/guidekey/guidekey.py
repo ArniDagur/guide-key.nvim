@@ -37,14 +37,15 @@ def get_feedkey_args(keybinding):
         flags = 'mt'
     return [keybinding['rhs'], flags]
 
-def get_data_dict(nvim):
+def get_data_dict(nvim, mode=None):
     if 'guidekey_starting_data_dict' in nvim.vars:
         data_dict = nvim.vars['guidekey_starting_data_dict']
     else:
         data_dict = {}
+   
+    if not mode:
+        mode = nvim.request('nvim_get_mode')['mode']
     
-    # TODO: Set mode automatically
-    mode = 'n'
     # Returns dict of keybindings from the Neovim API
     keymap = nvim.request('nvim_get_keymap', mode)
 
