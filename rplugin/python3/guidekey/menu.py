@@ -111,7 +111,7 @@ def calculate_max_length_of_data_dict(data_dict): #{{{
         keys_to_delete = ['mapping', 'desc']
         if data_dict['mapping']:
             keys_to_delete += ['expr', 'noremap', 'lhs', 'rhs', 'nowait',
-                               'silent', 'sid']
+                               'silent', 'sid', 'feedkey_args']
         for k in keys_to_delete:
             del looping_dict[k]
 
@@ -237,7 +237,16 @@ def handle_input(nvim, window, user_input, data_dict):
         close_window(nvim)
 # }}}
 
-def start_buffer(nvim, data_dict):
+def start_buffer(nvim, data_dict, start):
+    # TODO: Support starting on 2nd+ level bindings
+    if start == None or start == '':
+        pass
+    elif start in data_dict:
+        data_dict = data_dict[start]
+    else:
+        # Start key is invalid: Print error
+        nvim.command('echoerr "GuideKey Error: {} not found"'.format(start))
+
     # Before we start the buffer, save the information of our current screen
     # so that we can easily restore its view later.
     save_screen_information(nvim)
