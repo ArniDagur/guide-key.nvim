@@ -1,3 +1,4 @@
+# -- Python --
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -102,3 +103,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# -- Vimscript --
+*.swp
+.DS_Store
+bin/configlet
+bin/configlet.exe
