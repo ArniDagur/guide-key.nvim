@@ -109,3 +109,5 @@ venv.bak/
 .DS_Store
 bin/configlet
 bin/configlet.exe
+# vim themis
+.vim-themis
