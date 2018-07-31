@@ -37,7 +37,7 @@ class Grid(object):
         if self.item_count == 1:
             the_item: dict = self.items[0]
 
-            if the_cell['width'] <= maximum_width:
+            if the_item['width'] <= maximum_width:
                 return { 'num_lines': 1, 'widths': [the_item['width']] }
             else:
                 return None
@@ -72,6 +72,8 @@ class Grid(object):
 
     def create_lines(self, maximum_width: int) -> list:
         dimensions: dict = self.width_dimensions(maximum_width)
+        if dimensions == None:
+            return []
         num_lines: int = dimensions['num_lines']
         widths: list = dimensions['widths']
         num_columns: int = len(widths)

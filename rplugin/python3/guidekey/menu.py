@@ -114,6 +114,8 @@ def draw_menu_onto_window(nvim, window, data_dict): #{{{
     is_vertical = nvim.vars['guidekey_vertical']
     # Get maximum width
     if is_vertical:
+        # TODO: Actually make vertical mode work. It would be a good idea not to
+        # use the grid class; that is overkill.
         maximum_width = len(max(descs))
     else:
         maximum_width = window.width
