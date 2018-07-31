@@ -56,7 +56,7 @@ def get_data_dict(nvim, mode=None):
             if not char in current_pos_in_data_dict:
                 current_pos_in_data_dict[char] = {
                     'mapping': False,
-                    'desc': char
+                    'desc': '[{}] {}'.format(char, char)
                 }
             current_pos_in_data_dict = current_pos_in_data_dict[char]
         
@@ -71,7 +71,7 @@ def get_data_dict(nvim, mode=None):
                 'nowait': keybinding['nowait'],
                 'silent': keybinding['silent'],
                 'sid': keybinding['sid'],
-                'desc': get_desc(nvim, rhs)
+                'desc': '[{}] {}'.format(last_char, get_desc(nvim, rhs))
             }
 
     return data_dict

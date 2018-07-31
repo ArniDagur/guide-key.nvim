@@ -28,3 +28,7 @@ endif
 if !exists('g:guidekey_do_not_bind_keys')
     let g:guidekey_do_not_bind_keys = 0
 endif
+
+if !exists('g:guidekey_grid_seperator')
+    let g:guidekey_grid_seperator = ' '
+endif

@@ -3,8 +3,10 @@
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4:fdm=marker
 try:
     from key_handling import escape_keys
+    from grid import Grid
 except:
     from guidekey.key_handling import escape_keys
+    from guidekey.grid import Grid
 
 def save_screen_information(nvim): #{{{
     nvim.vars['guidekey#_winsaveview'] = nvim.eval('winsaveview()')
@@ -103,83 +105,31 @@ def close_window(nvim): #{{{
     nvim.request('nvim_call_atomic', calls)
 #}}}
 
-# What is needed to draw the menu
-def calculate_max_length_of_data_dict(data_dict): #{{{
-    # TODO: This can almost certainly be made more pythonic
-    looping_dict = data_dict
-    if 'mapping' in data_dict:
-        keys_to_delete = ['mapping', 'desc']
-        if data_dict['mapping']:
-            keys_to_delete += ['expr', 'noremap', 'lhs', 'rhs', 'nowait',
-                               'silent', 'sid']
-        for k in keys_to_delete:
-            del looping_dict[k]
-
-    string_lengths = []
-    for k in looping_dict.keys():
-        #  print(k, data_dict[k])
-        string = '[{}] {}'.format(k, data_dict[k]['desc'])
-        string_lengths.append(len(string))
-
-    return max(string_lengths)
-#}}}
-def calculate_layout_of_menu(nvim, window, data_dict):# {{{
-    n_items = len(data_dict)
-    max_length = calculate_max_length_of_data_dict(data_dict)
-    if nvim.vars.get('guidekey_vertical'):
-        max_height = nvim.eval('winheight({})'.format(window.number))
-        # TODO: Optimize this algebraically
-        n_rows = max_height - 2
-        n_cols = n_items // n_rows
-        col_width = max_length
-        window_dimension = n_cols * col_width
-    else:
-        max_width = nvim.eval('winwidth({})'.format(window.number))
-        n_cols = max_width // max_length
-        col_width = max_width // n_cols
-        n_rows = n_items // n_cols
-        if n_items % n_cols != 0:
-            n_rows += 1
-        window_dimension = n_rows
-
-    capacity = n_rows * n_cols
-    return {
-        'n_items': n_items,
-        'n_cols': n_cols,
-        'col_width': col_width,
-        'n_rows': n_rows,
-        'window_dimension': window_dimension,
-        'capacity': capacity
-    }
-#}}}
-def create_lines_of_buffer(nvim, layout, data_dict): #{{{
-    # Create the contents of the buffer to be shown on screen
-    lines_of_buffer = ['']
-    col = 0
-    for key in data_dict.keys():
-        addition = "[{}] {}".format(key, data_dict[key]['desc'])
-        # Fill rest of column with whitespace
-        addition += ' ' * (layout['col_width'] - len(addition))
-        if col < layout['n_cols']:
-            lines_of_buffer[-1] += addition
-            col += 1
-        else:
-            lines_of_buffer.append(addition)
-            col = 1
-    return lines_of_buffer
-#}}}
+# Draw menu
 def draw_menu_onto_window(nvim, window, data_dict): #{{{
-    layout = calculate_layout_of_menu(nvim, window, data_dict)
-
-    # Resize menu to fit everything
-    window_dimension = layout['window_dimension']
-    if nvim.vars.get('guidekey_vertical'):
-        window.width = window_dimension
+    descs = [v['desc'] for v in data_dict.values()
+             if type(v) == dict and 'desc' in v]
+    items = [{'string': v, 'width': len(v)} for v in descs]
+     
+    is_vertical = nvim.vars['guidekey_vertical']
+    # Get maximum width
+    if is_vertical:
+        maximum_width = len(max(descs))
     else:
-        window.height = window_dimension
+        maximum_width = window.width
+        
+    # Create lines to be printed onto buffer
+    seperator = nvim.vars['guidekey_grid_seperator']
+    grid = Grid(items, seperator=seperator) 
+    lines = grid.create_lines(maximum_width) 
+    
+    # Resize window to fit the menu
+    if is_vertical:
+        window.width = maximum_width
+    else:
+        window.height = len(lines)
 
     # Print to buffer
-    lines = create_lines_of_buffer(nvim, layout, data_dict)
     calls = [
         ['nvim_buf_set_option', [window.buffer, 'readonly', False]],
         ['nvim_buf_set_option', [window.buffer, 'modifiable', True]],
