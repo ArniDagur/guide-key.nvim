@@ -111,7 +111,7 @@ def calculate_max_length_of_data_dict(data_dict): #{{{
         keys_to_delete = ['mapping', 'desc']
         if data_dict['mapping']:
             keys_to_delete += ['expr', 'noremap', 'lhs', 'rhs', 'nowait',
-                               'silent', 'sid', 'feedkey_args']
+                               'silent', 'sid']
         for k in keys_to_delete:
             del looping_dict[k]
 
@@ -227,12 +227,11 @@ def handle_input(nvim, window, user_input, data_dict):
         else:
             # The key is a mapping. Execute it.
             close_window(nvim)
-            feedkey_args = key_dict['feedkey_args']
-            nvim.request(
-                'nvim_feedkeys',
-                feedkey_args[0], feedkey_args[1],
-                False # If true, escape K_SPECIAL/CSI bytes in 'keys'
-            )
+            
+            rhs = key_dict['rhs']
+            # Queues raw user input, unlike feedkeys, this uses a low-level
+            # input buffer and the call is non-blocking.
+            nvim.request('nvim_input', rhs)
     else:
         close_window(nvim)
 # }}}

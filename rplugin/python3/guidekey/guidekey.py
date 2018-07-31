@@ -26,17 +26,6 @@ try:
 except:
     from guidekey.key_handling import get_desc, key_to_list, escape_keys
 
-def get_feedkey_args(keybinding):
-    if keybinding['noremap']:
-        # n: Do not remap keys
-        # t: Handle keys as if typed
-        flags = 'nt'
-    else:
-        # m: Remap keys
-        # t: Handle keys as if typed
-        flags = 'mt'
-    return [keybinding['rhs'], flags]
-
 def get_data_dict(nvim, mode=None):
     if 'guidekey_starting_data_dict' in nvim.vars:
         data_dict = nvim.vars['guidekey_starting_data_dict']
@@ -79,7 +68,6 @@ def get_data_dict(nvim, mode=None):
                 'noremap': keybinding['noremap'],
                 'lhs': lhs,
                 'rhs': rhs,
-                'feedkey_args': get_feedkey_args(keybinding),
                 'nowait': keybinding['nowait'],
                 'silent': keybinding['silent'],
                 'sid': keybinding['sid'],
