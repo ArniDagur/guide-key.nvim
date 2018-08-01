@@ -27,51 +27,67 @@ class Grid(object):
         
         return { 'num_lines': num_lines, 'widths': widths }
     
-    def width_dimensions(self, maximum_width: int) -> dict:
-        # TODO: "This function could almost certainly be optimised"...
-        # surely not _all_ of the numbers of lines are worth searching through
-         
+    def width_dimensions(self, max_width: int) -> dict:
         if self.item_count == 0:
             return { 'num_lines': 0, 'widths': [] }
 
         if self.item_count == 1:
             the_item: dict = self.items[0]
 
-            if the_item['width'] <= maximum_width:
+            if the_item['width'] <= max_width:
                 return { 'num_lines': 1, 'widths': [the_item['width']] }
             else:
                 return None
+        
+        # Perform binary search to find the lowest number of lines where the 
+        # totality of cells still fit. This way, the execution time went from
+        # 620 usec --> 185 usec given large item count.
+        lo, hi = 1, self.item_count
+        # TODO: There is probably a cleaner (and faster) way to do this.
+        latest_successful_response = None
+        while lo < hi:
+            mid = (lo+hi)//2
+            response = self.fits_in_num_of_lines_given_maxwidth(max_width, mid)
+            if response:
+                hi = mid
+                latest_successful_response = response
+            else:
+                lo = mid + 1
 
-        # Instead of numbers of columns, try to find the fewest number of lines
-        # that the number will fit in.
-        for num_lines in range(1, self.item_count):
-            # The number of columns is the number of cells divided by the number
-            # of lines, _rounded up_.
-            num_columns: int = self.item_count // num_lines
-            if self.item_count % num_lines != 0:
-                num_columns += 1
+        if latest_successful_response:
+            # Return dimensions.
+            return latest_successful_response[1]
+        else:
+            # No amount of lines allows the items to fit.
+            return None
 
-            # Early abort: if there are so many columns that the width of the
-            # _column seperators_ is bigger than the width of the screen, then
-            # don't even bother.
-            total_seperator_width: int = ((num_columns - 1)
-                                          * self.seperator_width)
-            if maximum_width < total_seperator_width:
-                continue
-            
-            # Remove the seperator width from the available space
-            max_width_without_seps: int = maximum_width - total_seperator_width
+    def fits_in_num_of_lines_given_maxwidth(self, max_width, num_lines):
+        # The number of columns is the number of cells divided by the number
+        # of lines, _rounded up_.
+        num_columns: int = self.item_count // num_lines
+        if self.item_count % num_lines != 0:
+            num_columns += 1
 
-            potential_dimensions: dict = self.column_widths(
-                num_lines, num_columns)
-            if sum(potential_dimensions['widths']) < max_width_without_seps:
-                return potential_dimensions
+        # Early abort: if there are so many columns that the width of the
+        # _column seperators_ is bigger than the width of the screen, then
+        # don't even bother.
+        total_seperator_width: int = ((num_columns - 1)
+                                      * self.seperator_width)
+        if max_width < total_seperator_width:
+            return False
+        
+        # Remove the seperator width from the available space
+        max_width_without_seps: int = max_width - total_seperator_width
 
-        # If you get here you have _really_ wide cells
-        return None
+        potential_dimensions: dict = self.column_widths(
+            num_lines, num_columns)
+        if sum(potential_dimensions['widths']) < max_width_without_seps:
+            return [True, potential_dimensions]
+        else:
+            return False
 
-    def create_lines(self, maximum_width: int) -> list:
-        dimensions: dict = self.width_dimensions(maximum_width)
+    def create_lines(self, max_width: int) -> list:
+        dimensions: dict = self.width_dimensions(max_width)
         if dimensions == None:
             return []
         num_lines: int = dimensions['num_lines']
@@ -102,10 +118,3 @@ class Grid(object):
             lines.append(line)
 
         return lines
-
-
-l = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-     'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fiveteen',
-     'sixteen', 'seventeen', 'eightteen', 'nineteen', 'twenty', 'twenty\
-     one', 'twenty two', 'twenty three']
-items = [{'string': v, 'width': len(v)} for v in l]
