@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4:fdm=marker
 
-# Algorithm shamelessly stolen from https://github.com/ogham/rust-term-grid/
-# which is MIT licensed.
+# Algorithm based on https://github.com/ogham/rust-term-grid/ which is MIT
+# licensed.
 
 class Grid(object):
 
     def __init__(self, items: list, seperator: str = ' ',
                  direction: str='top2bottom'):
         self.items = items
+        self.item_widths = sorted([i['width'] for i in self.items],
+                                  reverse=True)
         self.item_count = len(items)
         self.seperator = seperator
         self.seperator_width = len(self.seperator)
@@ -38,30 +40,44 @@ class Grid(object):
                 return { 'num_lines': 1, 'widths': [the_item['width']] }
             else:
                 return None
-        
-        # Perform binary search to find the lowest number of lines where the 
-        # totality of cells still fit. This way, the execution time went from
-        # 620 usec --> 185 usec given large item count.
-        lo, hi = 1, self.item_count
-        # TODO: There is probably a cleaner (and faster) way to do this.
-        latest_successful_response = None
-        while lo < hi:
-            mid = (lo+hi)//2
-            response = self.fits_in_num_of_lines_given_maxwidth(max_width, mid)
-            if response:
-                hi = mid
-                latest_successful_response = response
-            else:
-                lo = mid + 1
 
-        if latest_successful_response:
-            # Return dimensions.
-            return latest_successful_response[1]
-        else:
-            # No amount of lines allows the items to fit.
+        if self.item_widths[0] > max_width:
+            # Largest item is bigger than max width;
+            # it is impossible to fit into grid.
             return None
 
-    def fits_in_num_of_lines_given_maxwidth(self, max_width, num_lines):
+        # Calculate theoretical mininum number of columns possible, which helps
+        # optimise this function.
+        theoretical_min_num_cols = 0
+        col_total_width_so_far = self.seperator_width * (-1)
+        while True:
+            current_item_width = self.item_widths[theoretical_min_num_cols]
+            current_item_width += self.seperator_width
+            if (current_item_width + col_total_width_so_far) <= max_width:
+                theoretical_min_num_cols += 1
+                col_total_width_so_far += current_item_width
+            else:
+                break
+        theoretical_max_num_lines = self.item_count // theoretical_min_num_cols
+        if self.item_count % theoretical_min_num_cols != 0:
+            theoretical_max_num_lines += 1
+
+        # Instead of looping upwards from 1 to self.item_count, loop downwards
+        # from the theoretical maximum number of lines, to 1. On small queries,
+        # this provides a marginal speed boost (create_lines() goes
+        # from 54.6 usec -> 42.2 usec). On large queries, the speed boost is
+        # much larger (create_lines goes from 1.95 msec -> 180 usec; 11x faster)
+        latest_successful_dimensions = None
+        for num_lines in reversed(range(1, theoretical_max_num_lines+1)):
+            response = self.get_dimensions_given_num_lines_and_maxwidth(
+                max_width, num_lines)
+
+            if response:
+                latest_successful_dimensions = response
+            else:
+                return latest_successful_dimensions
+
+    def get_dimensions_given_num_lines_and_maxwidth(self, max_width, num_lines):
         # The number of columns is the number of cells divided by the number
         # of lines, _rounded up_.
         num_columns: int = self.item_count // num_lines
@@ -74,7 +90,7 @@ class Grid(object):
         total_seperator_width: int = ((num_columns - 1)
                                       * self.seperator_width)
         if max_width < total_seperator_width:
-            return False
+            return None
         
         # Remove the seperator width from the available space
         max_width_without_seps: int = max_width - total_seperator_width
@@ -82,9 +98,9 @@ class Grid(object):
         potential_dimensions: dict = self.column_widths(
             num_lines, num_columns)
         if sum(potential_dimensions['widths']) < max_width_without_seps:
-            return [True, potential_dimensions]
+            return potential_dimensions
         else:
-            return False
+            return None
 
     def create_lines(self, max_width: int) -> list:
         dimensions: dict = self.width_dimensions(max_width)
