@@ -4,9 +4,11 @@
 try:
     from key_handling import escape_keys
     from grid import Grid
+    from column import Column
 except:
     from guidekey.key_handling import escape_keys
     from guidekey.grid import Grid
+    from guidekey.column import Column
 
 def save_screen_information(nvim): #{{{
     nvim.vars['guidekey#_winsaveview'] = nvim.eval('winsaveview()')
@@ -110,25 +112,26 @@ def draw_menu_onto_window(nvim, window, data_dict): #{{{
     descs = [v['desc'] for v in data_dict.values()
              if type(v) == dict and 'desc' in v]
     items = [{'string': v, 'width': len(v)} for v in descs]
-     
+    largest_desc_length = len(max(descs, key=len)) 
+    column_margins = nvim.vars['guidekey_column_margins']
+
     is_vertical = nvim.vars['guidekey_vertical']
-    # Get maximum width
     if is_vertical:
-        # TODO: Actually make vertical mode work. It would be a good idea not to
-        # use the grid class; that is overkill.
-        maximum_width = len(max(descs))
-    else:
-        maximum_width = window.width
-        
-    # Create lines to be printed onto buffer
-    seperator = nvim.vars['guidekey_grid_seperator']
-    grid = Grid(items, seperator=seperator) 
-    lines = grid.create_lines(maximum_width) 
-    
-    # Resize window to fit the menu
-    if is_vertical:
+        maximum_width = largest_desc_length
+        column = Column(items, margins=column_margins)
+        lines = column.create_lines(maximum_width)
+
         window.width = maximum_width
     else:
+        maximum_width = window.width
+        if largest_desc_length <= maximum_width:
+            grid_seperator = nvim.vars['guidekey_grid_seperator']
+            grid = Grid(items, seperator=grid_seperator)
+            lines = grid.create_lines(maximum_width)
+        else:
+            column = Column(items, margins=column_margins)
+            lines = column.create_lines(maximum_width)
+        
         window.height = len(lines)
 
     # Print to buffer

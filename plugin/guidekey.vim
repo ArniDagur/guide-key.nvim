@@ -32,3 +32,7 @@ endif
 if !exists('g:guidekey_grid_seperator')
     let g:guidekey_grid_seperator = ' '
 endif
+
+if !exists('g:guidekey_column_margins')
+    let g:guidekey_column_margins = [' ']
+endif
