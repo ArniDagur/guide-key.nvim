@@ -20,3 +20,4 @@ So it just kind of sort of works if you close your eyes and cross your fingers.
 | `g:guidekey_do_not_bind_keys`   | n/a         | `0` or `1`                           | `0`           |
 | `g:guidekey_grid_seperator`     | n/a         | string                               | `' '`         |
 | `g:guidekey_column_margins`     | n/a         | list of strings of length `1` or `2` | `[' ']`       |
+| `g:guidekey_dir_desc_dict`      | n/a         | dict                                 | `{}`          |

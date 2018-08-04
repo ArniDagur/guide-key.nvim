@@ -22,7 +22,7 @@ if !exists('g:guidekey_statusline')
 endif
 
 if !exists('g:guidekey_desc_dict')
-    let g:desc_dict = {}
+    let g:guidekey_desc_dict = {}
 endif
 
 if !exists('g:guidekey_do_not_bind_keys')
@@ -35,4 +35,8 @@ endif
 
 if !exists('g:guidekey_column_margins')
     let g:guidekey_column_margins = [' ']
+endif
+
+if !exists('g:guidekey_dir_desc_dict')
+    let g:guidekey_dir_desc_dict = {}
 endif

@@ -86,12 +86,20 @@ desc_dict = {
 def get_desc(nvim, key):
     if key in desc_dict:
         return desc_dict[key]
-    # TODO: Add unit test: assert that g:guidekey_desc_dict exists
-    elif 'guidekey_desc_dict' in nvim.vars \
-        and key in nvim.vars['guidekey_desc_dict']:
+    elif key in nvim.vars['guidekey_desc_dict']:
         return nvim.vars['guidekey_desc_dict'][key]
     else:
         return key
+
+def get_dir_desc(nvim, directory):
+    dir_desc_dict = nvim.vars['guidekey_dir_desc_dict']
+    current_pos_in_dir_desc_dict = dir_desc_dict
+    try:
+        for char in directory:
+            current_pos_in_dir_desc_dict = current_pos_in_dir_desc_dict[char]
+        return current_pos_in_dir_desc_dict['desc']
+    except KeyError:
+        return ''.join(directory)
 
 def escape_keys(key):
     return key.replace('<', '<lt>').replace('|', '<Bar>')

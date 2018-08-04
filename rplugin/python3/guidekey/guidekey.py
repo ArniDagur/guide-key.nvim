@@ -22,9 +22,10 @@
 #  okay. thank you very much
 # }}}
 try:
-    from key_handling import get_desc, key_to_list, escape_keys
+    from key_handling import get_desc, key_to_list, escape_keys, get_dir_desc
 except:
-    from guidekey.key_handling import get_desc, key_to_list, escape_keys
+    from guidekey.key_handling import get_desc, get_dir_desc, \
+                                      key_to_list, escape_keys
 
 def get_data_dict(nvim, mode=None):
     if 'guidekey_starting_data_dict' in nvim.vars:
@@ -52,11 +53,13 @@ def get_data_dict(nvim, mode=None):
 
         current_pos_in_data_dict = data_dict
         
-        for char in lhs_list[:-1]:
+        for i, char in enumerate(lhs_list[:-1]):
             if not char in current_pos_in_data_dict:
+                directory = lhs_list[:i]
                 current_pos_in_data_dict[char] = {
                     'mapping': False,
-                    'desc': '[{}] {}'.format(char, char)
+                    'desc': '[{}] {}'.format(char,
+                                             get_dir_desc(nvim, directory))
                 }
             current_pos_in_data_dict = current_pos_in_data_dict[char]
         
