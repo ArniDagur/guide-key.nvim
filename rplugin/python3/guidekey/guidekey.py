@@ -22,10 +22,11 @@
 #  okay. thank you very much
 # }}}
 try:
-    from key_handling import get_desc, key_to_list, escape_keys, get_dir_desc
-except:
-    from guidekey.key_handling import get_desc, get_dir_desc, \
+    from guidekey.key_handling import get_desc, get_prefix_desc, \
                                       key_to_list, escape_keys
+except:
+    from key_handling import get_desc, key_to_list, escape_keys, \
+                             get_prefix_desc
 
 def get_data_dict(nvim, mode=None):
     if 'guidekey_starting_data_dict' in nvim.vars:
@@ -35,9 +36,11 @@ def get_data_dict(nvim, mode=None):
    
     if not mode:
         mode = nvim.request('nvim_get_mode')['mode']
-    
+
     # Returns dict of keybindings from the Neovim API
     keymap = nvim.request('nvim_get_keymap', mode)
+    
+    seperator = nvim.vars['guidekey_seperator']
 
     for keybinding in keymap:
         lhs = keybinding['lhs']
@@ -47,7 +50,7 @@ def get_data_dict(nvim, mode=None):
             # they are not intended to be used by the user
             continue
         rhs = keybinding['rhs']
-        if rhs == '<nop>':
+        if rhs.lower() == '<nop>':
             # <nop> signifies an unbound key
             continue
 
@@ -55,16 +58,17 @@ def get_data_dict(nvim, mode=None):
         
         for i, char in enumerate(lhs_list[:-1]):
             if not char in current_pos_in_data_dict:
-                directory = lhs_list[:i]
+                prefix = ''.join(lhs_list[:i])
+                desc = get_prefix_desc(nvim, prefix)
                 current_pos_in_data_dict[char] = {
                     'mapping': False,
-                    'desc': '[{}] {}'.format(char,
-                                             get_dir_desc(nvim, directory))
+                    'desc': '{}{}+{}'.format(char, seperator, desc)
                 }
             current_pos_in_data_dict = current_pos_in_data_dict[char]
         
         last_char = lhs_list[-1]
         if not last_char in current_pos_in_data_dict:
+            desc = get_desc(nvim, rhs)
             current_pos_in_data_dict[last_char] = {
                 'mapping': True,
                 'expr': keybinding['expr'],
@@ -74,7 +78,7 @@ def get_data_dict(nvim, mode=None):
                 'nowait': keybinding['nowait'],
                 'silent': keybinding['silent'],
                 'sid': keybinding['sid'],
-                'desc': '[{}] {}'.format(last_char, get_desc(nvim, rhs))
+                'desc': '{}{}{}'.format(last_char, seperator, desc)
             }
 
     return data_dict

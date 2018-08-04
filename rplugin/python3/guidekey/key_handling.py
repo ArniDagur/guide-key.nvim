@@ -91,15 +91,12 @@ def get_desc(nvim, key):
     else:
         return key
 
-def get_dir_desc(nvim, directory):
-    dir_desc_dict = nvim.vars['guidekey_dir_desc_dict']
-    current_pos_in_dir_desc_dict = dir_desc_dict
-    try:
-        for char in directory:
-            current_pos_in_dir_desc_dict = current_pos_in_dir_desc_dict[char]
-        return current_pos_in_dir_desc_dict['desc']
-    except KeyError:
-        return ''.join(directory)
+def get_prefix_desc(nvim, prefix):
+    prefix_desc_dict = nvim.vars['guidekey_prefix_desc_dict']
+    if prefix in prefix_desc_dict:
+        return prefix_desc_dict[prefix]
+    else:
+        return 'prefix'
 
 def escape_keys(key):
     return key.replace('<', '<lt>').replace('|', '<Bar>')
