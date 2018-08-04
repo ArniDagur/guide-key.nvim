@@ -60,7 +60,7 @@ def get_data_dict(nvim, mode=None):
 
         for i, char in enumerate(lhs_list[:-1]):
             if not char in current_pos_in_data_dict:
-                prefix = ''.join(lhs_list[:i])
+                prefix = ''.join(lhs_list[:i+1])
                 desc = get_prefix_desc(nvim, prefix)
                 current_pos_in_data_dict[char] = {
                     'mapping': False,
