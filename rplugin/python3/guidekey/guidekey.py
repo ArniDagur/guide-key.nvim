@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#  !/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8:et:ts=4:sts=4:sw=4:fdm=marker
 # {{{ IRC CONVO
@@ -50,8 +50,10 @@ def get_data_dict(nvim, mode=None):
             # they are not intended to be used by the user
             continue
         rhs = keybinding['rhs']
-        if rhs.lower() == '<nop>':
+        if rhs == '<Nop>':
             # <nop> signifies an unbound key
+            continue
+        if rhs.startswith(':call _start_guidekey('):
             continue
 
         current_pos_in_data_dict = data_dict
@@ -65,7 +67,7 @@ def get_data_dict(nvim, mode=None):
                     'desc': '{}{}+{}'.format(char, seperator, desc)
                 }
             current_pos_in_data_dict = current_pos_in_data_dict[char]
-        
+
         last_char = lhs_list[-1]
         if not last_char in current_pos_in_data_dict:
             desc = get_desc(nvim, rhs)
