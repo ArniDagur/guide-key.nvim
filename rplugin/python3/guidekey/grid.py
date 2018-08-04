@@ -46,6 +46,11 @@ class Grid(object):
             # it is impossible to fit into grid.
             return None
 
+        if sum(self.item_widths) < max_width:
+            # Everything fits on one line
+            return { 'num_lines': 1, 'widths': [i['width']
+                                                for i in self.items] }
+
         # Calculate theoretical mininum number of columns possible, which helps
         # optimise this function.
         theoretical_min_num_cols = 0
