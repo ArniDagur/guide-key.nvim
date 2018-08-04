@@ -98,6 +98,7 @@ def get_desc(nvim, key):
     else:
         return key
 
+# It may be more user friendly to merge this dict with prefix_desc_dict?
 default_prefix_desc_dict = {
     '<C-W>': 'Window',
     'g': 'Goto / Get',
