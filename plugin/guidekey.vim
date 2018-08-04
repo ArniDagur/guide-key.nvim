@@ -37,6 +37,10 @@ if !exists('g:guidekey_column_margins')
     let g:guidekey_column_margins = [' ']
 endif
 
+if !exists('g:guidekey_grid_margins')
+    let g:guidekey_grid_margins = [' ']
+endif
+
 if !exists('g:guidekey_prefix_desc_dict')
     let g:guidekey_prefix_desc_dict = {}
 endif
