@@ -113,8 +113,10 @@ def draw_menu_onto_window(nvim, window, data_dict): #{{{
              if type(v) == dict and 'desc' in v]
     items = [{'string': v, 'width': len(v)} for v in descs]
     largest_desc_length = len(max(descs, key=len)) 
-    column_margins = nvim.vars['guidekey_column_margins']
 
+    column_margins = nvim.vars['guidekey_column_margins']
+    grid_margins = nvim.vars['guidekey_grid_margins']
+    grid_margin_width = len(''.join(grid_margins))
     is_vertical = nvim.vars['guidekey_vertical']
     if is_vertical:
         maximum_width = largest_desc_length
@@ -124,9 +126,9 @@ def draw_menu_onto_window(nvim, window, data_dict): #{{{
         window.width = maximum_width
     else:
         maximum_width = window.width
-        if largest_desc_length <= maximum_width:
+        if largest_desc_length <= maximum_width - grid_margin_width:
             grid_seperator = nvim.vars['guidekey_grid_seperator']
-            grid = Grid(items, seperator=grid_seperator)
+            grid = Grid(items, seperator=grid_seperator, margins=grid_margins)
             lines = grid.create_lines(maximum_width)
         else:
             column = Column(items, margins=column_margins)

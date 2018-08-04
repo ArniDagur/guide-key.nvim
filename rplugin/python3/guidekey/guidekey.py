@@ -33,13 +33,13 @@ def get_data_dict(nvim, mode=None):
         data_dict = nvim.vars['guidekey_starting_data_dict']
     else:
         data_dict = {}
-   
+
     if not mode:
         mode = nvim.request('nvim_get_mode')['mode']
 
     # Returns dict of keybindings from the Neovim API
     keymap = nvim.request('nvim_get_keymap', mode)
-    
+
     seperator = nvim.vars['guidekey_seperator']
 
     for keybinding in keymap:
@@ -57,7 +57,7 @@ def get_data_dict(nvim, mode=None):
             continue
 
         current_pos_in_data_dict = data_dict
-        
+
         for i, char in enumerate(lhs_list[:-1]):
             if not char in current_pos_in_data_dict:
                 prefix = ''.join(lhs_list[:i])

@@ -5,10 +5,12 @@
 # Algorithm based on https://github.com/ogham/rust-term-grid/ which is MIT
 # licensed.
 
+_DEFAULT_MARGIN = ' '
+
 class Grid(object):
 
-    def __init__(self, items: list, seperator: str = ' ',
-                 direction: str='top2bottom'):
+    def __init__(self, items: list, seperator: str=' ',
+                 margins: list=[' '], direction: str='top2bottom'):
         self.items = items
         self.item_widths = sorted([i['width'] for i in self.items],
                                   reverse=True)
@@ -16,6 +18,18 @@ class Grid(object):
         self.seperator = seperator
         self.seperator_width = len(self.seperator)
         self.direction = direction
+
+        if len(margins) == 1:
+            self.left_margin = margins[0]
+            self.right_margin = margins[0]
+        elif len(margins) == 2:
+            self.left_margin = margins[0]
+            self.right_margin = margins[1]
+        else:
+            # Invalid margin supplied; ignore it and use some defaults
+            self.left_margin = _DEFAULT_MARGIN
+            self.right_margin = _DEFAULT_MARGIN
+        self.margin_width = len(self.left_margin + self.right_margin)
 
     def column_widths(self, num_lines: int, num_columns: int) -> dict:
         widths: list = [0] * num_columns # Fill list with zeroes
@@ -55,10 +69,12 @@ class Grid(object):
         # optimise this function.
         theoretical_min_num_cols = 0
         col_total_width_so_far = self.seperator_width * (-1)
+        max_width_without_margins = max_width - self.margin_width
         while True:
             current_item_width = self.item_widths[theoretical_min_num_cols]
             current_item_width += self.seperator_width
-            if (current_item_width + col_total_width_so_far) <= max_width:
+            if (current_item_width + col_total_width_so_far
+                <= max_width_without_margins):
                 theoretical_min_num_cols += 1
                 col_total_width_so_far += current_item_width
             else:
@@ -83,6 +99,7 @@ class Grid(object):
                 return latest_successful_dimensions
 
     def get_dimensions_given_num_lines_and_maxwidth(self, max_width, num_lines):
+        max_width_without_margins = max_width - self.margin_width
         # The number of columns is the number of cells divided by the number
         # of lines, _rounded up_.
         num_columns: int = self.item_count // num_lines
@@ -94,11 +111,12 @@ class Grid(object):
         # don't even bother.
         total_seperator_width: int = ((num_columns - 1)
                                       * self.seperator_width)
-        if max_width < total_seperator_width:
+        if max_width_without_margins < total_seperator_width:
             return None
         
         # Remove the seperator width from the available space
-        max_width_without_seps: int = max_width - total_seperator_width
+        max_width_without_seps: int = (max_width_without_margins
+                                       - total_seperator_width)
 
         potential_dimensions: dict = self.column_widths(
             num_lines, num_columns)
@@ -117,7 +135,7 @@ class Grid(object):
                 
         lines: list = []
         for row in range(num_lines):
-            line: str = ''
+            line: str = self.left_margin
             for col in range(num_columns):
                 if self.direction == 'top2bottom':
                     num: int = col * num_lines + row
@@ -136,6 +154,7 @@ class Grid(object):
                     # Add extra spaces
                     extra_spaces: str = ' ' * (widths[col] - item['width'])
                     line += (item['string'] + extra_spaces + self.seperator)
+            line += self.right_margin
             lines.append(line)
 
         return lines
