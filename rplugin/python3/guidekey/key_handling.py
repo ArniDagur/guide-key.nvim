@@ -9,8 +9,9 @@ def key_to_list(key):
     return re.findall(key_list_regex, key)
 
 # Description dictionary {{{
-desc_dict = {
+default_desc_dict = {
     '$': 'Cursor to EOL',
+    '^': 'Cursor to BOL',
     '%': 'Go to next bracket',
     '&': 'Repeat last :s',
     ',': 'Repeat latest f, t, F, or T in opposite direction',
@@ -32,11 +33,16 @@ desc_dict = {
     'Q': 'Enter Ex mode',
     'R': 'Enter replace mode',
     'r': 'Replace',
+    'f': 'Find',
+    'F': 'Find in the opposite direction',
+    't': 'Till',
+    'T': 'Till in the opposite direction',
     'u': 'Undo',
     'U': 'Undo all changes on line',
     'y': 'Yank',
     'Y': 'Yank line',
     'yy': 'Yank line',
+    'y$': 'Yank till end of line',
     'ZZ': 'Store current file if modified and exit',
     'ZQ': 'Exit current file',
     '`(': 'Cursor to start of sentence',
@@ -74,27 +80,35 @@ desc_dict = {
     'A': 'Enter insert mode at EOL',
     'o': 'Enter insert mode below cursor',
     'O': 'Enter insert mode above cursor',
-    '<C-w>h': 'Move to window on the left',
-    '<C-w>j': 'Move to window below',
-    '<C-w>k': 'Move to window above',
-    '<C-w>l': 'Move to window on the right',
+    '<C-W>h': 'Move to window on the left',
+    '<C-W>j': 'Move to window below',
+    '<C-W>k': 'Move to window above',
+    '<C-W>l': 'Move to window on the right',
     # -- Common third party plugins --
     # ctrlp.vim
     '<Plug>(ctrlp)': 'CTRL-P fuzzy search'
 }
 #}}}
 def get_desc(nvim, key):
+    desc_dict = nvim.vars['guidekey_desc_dict']
     if key in desc_dict:
         return desc_dict[key]
-    elif key in nvim.vars['guidekey_desc_dict']:
-        return nvim.vars['guidekey_desc_dict'][key]
+    elif key in default_desc_dict:
+        return default_desc_dict[key]
     else:
         return key
 
+default_prefix_desc_dict = {
+    '<C-W>': 'Window',
+    'g': 'Goto / Get',
+    'z': 'Folding'
+}
 def get_prefix_desc(nvim, prefix):
     prefix_desc_dict = nvim.vars['guidekey_prefix_desc_dict']
     if prefix in prefix_desc_dict:
         return prefix_desc_dict[prefix]
+    elif prefix in default_prefix_desc_dict:
+        return default_prefix_desc_dict[prefix]
     else:
         return 'prefix'
 
