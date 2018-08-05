@@ -50,8 +50,8 @@ def get_data_dict(nvim, mode=None):
             # they are not intended to be used by the user
             continue
         rhs = keybinding['rhs']
-        if rhs == '<Nop>':
-            # <nop> signifies an unbound key
+        if rhs == '':
+            # Right hand side is an empty string if key is unbound; skip it.
             continue
         if rhs.startswith(':call _start_guidekey('):
             continue
