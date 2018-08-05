@@ -84,9 +84,25 @@ default_desc_dict = {
     '<C-W>j': 'Move to window below',
     '<C-W>k': 'Move to window above',
     '<C-W>l': 'Move to window on the right',
+    '<Plug>NetrwBrowseX': 'Open with Netrw',
     # -- Common third party plugins --
     # ctrlp.vim
-    '<Plug>(ctrlp)': 'CTRL-P fuzzy search'
+    '<Plug>(ctrlp)': 'CTRL-P fuzzy search',
+    # Nerd commenter
+    '<Plug>NERDCommenterComment': 'Comment',
+    '<Plug>NERDCommenterNested': 'Nested comment',
+    '<Plug>NERDCommenterToggle': 'Toggle comment',
+    '<Plug>NERDCommenterMinimal': 'Minimal comment',
+    '<Plug>NERDCommenterInvert': 'Invert comment',
+    '<Plug>NERDCommenterSexy': 'Sexy comment',
+    '<Plug>NERDCommenterYank': 'Comment and yank',
+    '<Plug>NERDCommenterToEOL': 'Comment to EOL',
+    '<Plug>NERDCommenterAppend': 'Append comment to EOL',
+    '<Plug>NERDCommenterInsert': 'Add comment and insert',
+    '<Plug>NERDCommenterAltDelims': 'Use alternate delimiers',
+    '<Plug>NERDCommenterAlignLeft': 'Comment left aligned',
+    '<Plug>NERDCommenterAlignBoth': 'Comment both aligned',
+    '<Plug>NERDCommenterUncomment': 'Uncomment'
 }
 #}}}
 def get_desc(nvim, key):
@@ -101,7 +117,7 @@ def get_desc(nvim, key):
 # It may be more user friendly to merge this dict with prefix_desc_dict?
 default_prefix_desc_dict = {
     '<C-W>': 'Window',
-    'g': 'Goto / Get',
+    'g': 'Goto/Get',
     'z': 'Folding'
 }
 def get_prefix_desc(nvim, prefix):
@@ -111,7 +127,7 @@ def get_prefix_desc(nvim, prefix):
     elif prefix in default_prefix_desc_dict:
         return default_prefix_desc_dict[prefix]
     else:
-        return 'prefix'
+        return 'Prefix'
 
 def escape_keys(key):
     return key.replace('<', '<lt>').replace('|', '<Bar>')
