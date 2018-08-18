@@ -184,11 +184,13 @@ def handle_input(nvim, window, user_input, data_dict):
         else:
             # The key is a mapping. Execute it.
             close_window(nvim)
-            
-            rhs = key_dict['rhs']
+
+            # Mapping left-hand-side
+            lhs = key_dict['lhs']
+
             # Queues raw user input, unlike feedkeys, this uses a low-level
             # input buffer and the call is non-blocking.
-            nvim.request('nvim_input', rhs)
+            nvim.request('nvim_input', lhs)
     else:
         close_window(nvim)
 # }}}
