@@ -1,8 +1,6 @@
-CC0-1.0 Universal Public Domain Dedication
-============================================
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Cc-zero.svg" width="50px"/>
+# CC0 1.0 Universal Public Domain Dedication <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Cc-zero.svg" valign="middle"/>
 
-## Statement of Purpose
+### Statement of Purpose
 
 The laws of most jurisdictions throughout the world automatically confer
 exclusive Copyright and Related Rights (defined below) upon the creator
