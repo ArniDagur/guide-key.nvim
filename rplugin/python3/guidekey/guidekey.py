@@ -41,6 +41,7 @@ def get_data_dict(nvim, mode=None):
     keymap = nvim.request('nvim_get_keymap', mode)
 
     seperator = nvim.vars['guidekey_seperator']
+    exit_on_esc = nvim.vars['guidekey_exit_on_esc']
 
     for keybinding in keymap:
         lhs = keybinding['lhs']
@@ -48,6 +49,8 @@ def get_data_dict(nvim, mode=None):
         if lhs_list == [] or lhs_list[0] == '<Plug>':
             # Skip bindings that start with <Plug>;
             # they are not intended to be used by the user
+            continue
+        if lhs_list[0] == '<Esc>' and exit_on_esc:
             continue
         rhs = keybinding['rhs']
         if rhs == '':

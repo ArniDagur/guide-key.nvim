@@ -4,7 +4,6 @@ if exists('g:loaded_guidekey')
 endif
 let g:loaded_guidekey = 1
 
-
 if !exists('g:guidekey_starting_data_dict')
     let g:guidekey_starting_data_dict = {}
 endif
@@ -47,4 +46,8 @@ endif
 
 if !exists('g:guidekey_seperator')
     let g:guidekey_seperator = ' -> '
+endif
+
+if !exists('g:guidekey_exit_on_esc')
+    let g:guidekey_exit_on_esc = 1
 endif

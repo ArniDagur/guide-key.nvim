@@ -22,3 +22,4 @@ So it just kind of sort of works if you close your eyes and cross your fingers.
 | `g:guidekey_grid_margins`       | n/a         | list of strings of length `1` or `2` | `[' ']`       |
 | `g:guidekey_column_margins`     | n/a         | list of strings of length `1` or `2` | `[' ']`       |
 | `g:guidekey_prefix_desc_dict`   | n/a         | dict                                 | `{}`          |
+| `g:guidekey_exit_on_esc`        | n/a         | `0` or `1`                           | `1`
